@@ -30,9 +30,9 @@ function initializeCoreMod() {
 				method.instructions.insertBefore(start, new VarInsnNode(Opcodes.ILOAD, 6));
 				
 				method.instructions.insertBefore(start, new VarInsnNode(Opcodes.ALOAD, 0));
-				method.instructions.insertBefore(start, new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/entity/ItemRenderer", "itemRenderer", "Lnet/minecraft/client/renderer/ItemRenderer;"));
+				method.instructions.insertBefore(start, new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/entity/ItemRenderer", asmapi.mapField("field_177080_a"), "Lnet/minecraft/client/renderer/ItemRenderer;"));
 				method.instructions.insertBefore(start, new VarInsnNode(Opcodes.ALOAD, 0));
-				method.instructions.insertBefore(start, new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/entity/ItemRenderer", "random", "Ljava/util/Random;"));
+				method.instructions.insertBefore(start, new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/entity/ItemRenderer", asmapi.mapField("field_177079_e"), "Ljava/util/Random;"));
 				
 				method.instructions.insertBefore(start, asmapi.buildMethodCall("team/creative/itemphysiclite/ItemPhysicLite", "renderItem", "(Lnet/minecraft/entity/item/ItemEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;ILnet/minecraft/client/renderer/ItemRenderer;Ljava/util/Random;)Z", asmapi.MethodType.STATIC));
 				
