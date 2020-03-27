@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[24,)"
+issueTrackerURL="https://github.com/CreativeMD/ItemPhysicLite/issues"
+logoFile="itemphysic.png"
+
+[[mods]]
+	modId="itemphysiclite"
+	version="1.4.0"
+	displayName="ItemPhysic Lite"
+	side="CLIENT"
+	displayURL="https://www.curseforge.com/minecraft/mc-mods/itemphysic-lite"
+	authors=["CreativeMD"]
+	clientSideOnly="true"
+	acceptableRemoteVersions="*"
+	description='''Enhances the rendering of items'''
