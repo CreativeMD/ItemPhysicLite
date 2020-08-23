@@ -1,5 +1,6 @@
 package team.creative.itemphysiclite;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,17 +12,19 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -31,6 +34,7 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
@@ -79,6 +83,10 @@ public class ItemPhysicLite {
 		if (mc.isGamePaused())
 			rotateBy = 0;
 		
+		Vector3d motionMultiplier = getMotionMultiplier(entityIn);
+		if (motionMultiplier != null && motionMultiplier.lengthSquared() > 0)
+			rotateBy *= motionMultiplier.x * 0.2;
+		
 		matrixStackIn.rotate(Vector3f.XP.rotation((float) Math.PI / 2));
 		matrixStackIn.rotate(Vector3f.ZP.rotation(entityIn.rotationYaw));
 		
@@ -87,7 +95,7 @@ public class ItemPhysicLite {
 		//Handle Rotations
 		if (applyEffects) {
 			if (flag) {
-				if (!entityIn.onGround) {
+				if (!entityIn.func_233570_aj_()) {
 					rotateBy *= 2;
 					Fluid fluid = getFluid(entityIn);
 					if (fluid == null)
@@ -98,7 +106,7 @@ public class ItemPhysicLite {
 					entityIn.rotationPitch += rotateBy;
 				}
 			} else if (entityIn != null && !Double.isNaN(entityIn.getPosX()) && !Double.isNaN(entityIn.getPosY()) && !Double.isNaN(entityIn.getPosZ()) && entityIn.world != null) {
-				if (entityIn.onGround) {
+				if (entityIn.func_233570_aj_()) {
 					if (!flag)
 						entityIn.rotationPitch = 0;
 				} else {
@@ -113,7 +121,7 @@ public class ItemPhysicLite {
 			
 			if (flag)
 				matrixStackIn.translate(0, -0.2, -0.08);
-			else if (entityIn.world.getBlockState(entityIn.getPosition()).getBlock() == Blocks.SNOW)
+			else if (entityIn.world.getBlockState(entityIn.func_233580_cy_()).getBlock() == Blocks.SNOW)
 				matrixStackIn.translate(0, 0.0, -0.14);
 			else
 				matrixStackIn.translate(0, 0, -0.04);
@@ -163,11 +171,11 @@ public class ItemPhysicLite {
 			return null;
 		
 		double d0 = item.getPosY();
-		BlockPos pos = item.getPosition();
+		BlockPos pos = item.func_233580_cy_();
 		if (below)
 			pos = pos.down();
 		
-		IFluidState state = item.world.getFluidState(pos);
+		FluidState state = item.world.getFluidState(pos);
 		Fluid fluid = state.getFluid();
 		
 		if (fluid == null || fluid.getFluid().getAttributes().getDensity() == 0)
@@ -195,5 +203,17 @@ public class ItemPhysicLite {
 			return 2;
 		
 		return 1;
+	}
+	
+	private static Field motionMultiplierField = null;
+	
+	public static Vector3d getMotionMultiplier(Entity entity) {
+		if (motionMultiplierField == null)
+			motionMultiplierField = ObfuscationReflectionHelper.findField(Entity.class, "field_213328_B");
+		try {
+			return (Vector3d) motionMultiplierField.get(entity);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			return null;
+		}
 	}
 }
