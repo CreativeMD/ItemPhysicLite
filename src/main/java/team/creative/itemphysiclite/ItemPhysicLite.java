@@ -79,7 +79,7 @@ public class ItemPhysicLite {
 		boolean flag = ibakedmodel.isGui3d();
 		int j = getModelCount(itemstack);
 		
-		float rotateBy = (System.nanoTime() - lastTickTime) / 800000000000000F;
+		float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F;
 		if (mc.isGamePaused())
 			rotateBy = 0;
 		
