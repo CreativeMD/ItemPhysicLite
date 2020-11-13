@@ -95,7 +95,7 @@ public class ItemPhysicLite {
 		//Handle Rotations
 		if (applyEffects) {
 			if (flag) {
-				if (!entityIn.func_233570_aj_()) {
+				if (!entityIn.isOnGround()) {
 					rotateBy *= 2;
 					Fluid fluid = getFluid(entityIn);
 					if (fluid == null)
@@ -106,7 +106,7 @@ public class ItemPhysicLite {
 					entityIn.rotationPitch += rotateBy;
 				}
 			} else if (entityIn != null && !Double.isNaN(entityIn.getPosX()) && !Double.isNaN(entityIn.getPosY()) && !Double.isNaN(entityIn.getPosZ()) && entityIn.world != null) {
-				if (entityIn.func_233570_aj_()) {
+				if (entityIn.isOnGround()) {
 					if (!flag)
 						entityIn.rotationPitch = 0;
 				} else {
@@ -121,7 +121,7 @@ public class ItemPhysicLite {
 			
 			if (flag)
 				matrixStackIn.translate(0, -0.2, -0.08);
-			else if (entityIn.world.getBlockState(entityIn.func_233580_cy_()).getBlock() == Blocks.SNOW)
+			else if (entityIn.world.getBlockState(entityIn.getPosition()).getBlock() == Blocks.SNOW)
 				matrixStackIn.translate(0, 0.0, -0.14);
 			else
 				matrixStackIn.translate(0, 0, -0.04);
@@ -171,7 +171,7 @@ public class ItemPhysicLite {
 			return null;
 		
 		double d0 = item.getPosY();
-		BlockPos pos = item.func_233580_cy_();
+		BlockPos pos = item.getPosition();
 		if (below)
 			pos = pos.down();
 		
