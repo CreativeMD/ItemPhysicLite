@@ -70,27 +70,26 @@ public class ItemPhysicLite {
         if (entityIn.getAge() == 0)
             return false;
         
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         ItemStack itemstack = entityIn.getItem();
-        int i = itemstack.isEmpty() ? 187 : Item.getIdFromItem(itemstack.getItem()) + itemstack.getDamage();
+        int i = itemstack.isEmpty() ? 187 : Item.getId(itemstack.getItem()) + itemstack.getDamageValue();
         random.setSeed(i);
-        IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(itemstack, entityIn.world, (LivingEntity) null);
+        IBakedModel ibakedmodel = itemRenderer.getModel(itemstack, entityIn.getCommandSenderWorld(), (LivingEntity) null);
         boolean flag = ibakedmodel.isGui3d();
         int j = getModelCount(itemstack);
         
         float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F;
-        if (mc.isGamePaused())
+        if (mc.isPaused())
             rotateBy = 0;
         
         Vector3d motionMultiplier = getMotionMultiplier(entityIn);
-        if (motionMultiplier != null && motionMultiplier.lengthSquared() > 0)
+        if (motionMultiplier != null && motionMultiplier.lengthSqr() > 0)
             rotateBy *= motionMultiplier.x * 0.2;
         
-        matrixStackIn.rotate(Vector3f.XP.rotation((float) Math.PI / 2));
-        matrixStackIn.rotate(Vector3f.ZP.rotation(entityIn.rotationYaw));
+        matrixStackIn.mulPose(Vector3f.XP.rotation((float) Math.PI / 2));
+        matrixStackIn.mulPose(Vector3f.ZP.rotation(entityIn.yRot));
         
-        boolean applyEffects = entityIn.getAge() != 0 && (flag || mc.getRenderManager().options != null);
-        
+        boolean applyEffects = entityIn.getAge() != 0 && (flag || mc.options != null);
         //Handle Rotations
         if (applyEffects) {
             if (flag) {
@@ -102,25 +101,25 @@ public class ItemPhysicLite {
                     if (fluid != null)
                         rotateBy /= fluid.getAttributes().getDensity() / 1000 * 10;
                     
-                    entityIn.rotationPitch += rotateBy;
+                    entityIn.xRot += rotateBy;
                 }
-            } else if (entityIn != null && !Double.isNaN(entityIn.getPosX()) && !Double.isNaN(entityIn.getPosY()) && !Double.isNaN(entityIn.getPosZ()) && entityIn.world != null) {
+            } else if (entityIn != null && !Double.isNaN(entityIn.getX()) && !Double.isNaN(entityIn.getY()) && !Double.isNaN(entityIn.getZ()) && entityIn.level != null) {
                 if (entityIn.isOnGround()) {
                     if (!flag)
-                        entityIn.rotationPitch = 0;
+                        entityIn.xRot = 0;
                 } else {
                     rotateBy *= 2;
                     Fluid fluid = getFluid(entityIn);
                     if (fluid != null)
                         rotateBy /= fluid.getAttributes().getDensity() / 1000 * 10;
                     
-                    entityIn.rotationPitch += rotateBy;
+                    entityIn.xRot += rotateBy;
                 }
             }
             
             if (flag)
                 matrixStackIn.translate(0, -0.2, -0.08);
-            else if (entityIn.world.getBlockState(entityIn.getPosition()).getBlock() == Blocks.SNOW)
+            else if (entityIn.level.getBlockState(entityIn.blockPosition()).getBlock() == Blocks.SNOW)
                 matrixStackIn.translate(0, 0.0, -0.14);
             else
                 matrixStackIn.translate(0, 0, -0.04);
@@ -128,7 +127,7 @@ public class ItemPhysicLite {
             double height = 0.2;
             if (flag)
                 matrixStackIn.translate(0, height, 0);
-            matrixStackIn.rotate(Vector3f.YP.rotation(entityIn.rotationPitch));
+            matrixStackIn.mulPose(Vector3f.YP.rotation(entityIn.xRot));
             if (flag)
                 matrixStackIn.translate(0, -height, 0);
         }
@@ -141,7 +140,7 @@ public class ItemPhysicLite {
         }
         
         for (int k = 0; k < j; ++k) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             if (k > 0) {
                 if (flag) {
                     float f11 = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
@@ -151,13 +150,13 @@ public class ItemPhysicLite {
                 }
             }
             
-            itemRenderer.renderItem(itemstack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
-            matrixStackIn.pop();
+            itemRenderer.render(itemstack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            matrixStackIn.popPose();
             if (!flag)
                 matrixStackIn.translate(0.0, 0.0, 0.05375F);
         }
         
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
         return true;
     }
     
@@ -166,16 +165,16 @@ public class ItemPhysicLite {
     }
     
     public static Fluid getFluid(ItemEntity item, boolean below) {
-        if (item.world == null)
+        if (item.level == null)
             return null;
         
-        double d0 = item.getPosY();
-        BlockPos pos = item.getPosition();
+        double d0 = item.position().y;
+        BlockPos pos = item.blockPosition();
         if (below)
-            pos = pos.down();
+            pos = pos.below();
         
-        FluidState state = item.world.getFluidState(pos);
-        Fluid fluid = state.getFluid();
+        FluidState state = item.level.getFluidState(pos);
+        Fluid fluid = state.getType();
         
         if (fluid == null || fluid.getFluid().getAttributes().getDensity() == 0)
             return null;
@@ -183,7 +182,7 @@ public class ItemPhysicLite {
         if (below)
             return fluid;
         
-        double filled = state.getHeight();
+        double filled = state.getHeight(item.level, pos);
         
         if (d0 - pos.getY() - 0.2 <= filled)
             return fluid;
