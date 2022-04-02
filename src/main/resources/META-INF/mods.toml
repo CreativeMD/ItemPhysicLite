@@ -6,7 +6,7 @@ license="GNU General Public License v3.0"
 
 [[mods]]
 	modId="itemphysiclite"
-	version="1.4.0"
+	version="${file.jarVersion}"
 	displayName="ItemPhysic Lite"
 	side="CLIENT"
 	displayURL="https://www.curseforge.com/minecraft/mc-mods/itemphysic-lite"
