@@ -190,7 +190,7 @@ public class ItemPhysicLite implements ClientLoader {
         if(fluid == null) {
             return 0;
         }
-        return fluid.getTickDelay(level) / 10F;
+        return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
     }
 
     @Override
