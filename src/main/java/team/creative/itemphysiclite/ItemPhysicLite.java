@@ -3,6 +3,9 @@ package team.creative.itemphysiclite;
 import java.lang.reflect.Field;
 import java.util.Random;
 
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluids;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,47 +28,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.TickEvent.RenderTickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-import net.minecraftforge.network.NetworkConstants;
+import team.creative.creativecore.CreativeCore;
+import team.creative.creativecore.client.ClientLoader;
+import team.creative.itemphysiclite.mixin.EntityAccessor;
 
 @Mod(value = ItemPhysicLite.MODID)
-public class ItemPhysicLite {
+public class ItemPhysicLite implements ClientLoader {
     
     public static final Logger LOGGER = LogManager.getLogger(ItemPhysicLite.MODID);
     
     public static final String MODID = "itemphysiclite";
     
-    public ItemPhysicLite() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-    }
-    
     private static Minecraft mc = Minecraft.getInstance();
     
-    private void doClientStuff(final FMLClientSetupEvent event) {
-        ModLoadingContext.get()
-                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-    
     public static long lastTickTime;
-    
-    @SubscribeEvent
-    @OnlyIn(value = Dist.CLIENT)
-    public void renderTick(RenderTickEvent event) {
-        if (event.phase == Phase.END)
-            lastTickTime = System.nanoTime();
-    }
     
     public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer, Random rand) {
         if (entity.getAge() == 0)
@@ -77,7 +54,6 @@ public class ItemPhysicLite {
         BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level, (LivingEntity) null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
         int j = getModelCount(itemstack);
-        
         float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F;
         if (mc.isPaused())
             rotateBy = 0;
@@ -100,7 +76,7 @@ public class ItemPhysicLite {
                     if (fluid == null)
                         fluid = getFluid(entity, true);
                     if (fluid != null)
-                        rotateBy /= fluid.getAttributes().getDensity() / 1000 * 10;
+                        rotateBy /= (1 + getViscosity(fluid, entity.getLevel()));
                     
                     entity.setXRot(entity.getXRot() + rotateBy);
                 }
@@ -112,7 +88,7 @@ public class ItemPhysicLite {
                     rotateBy *= 2;
                     Fluid fluid = getFluid(entity);
                     if (fluid != null)
-                        rotateBy /= fluid.getAttributes().getDensity() / 1000 * 10;
+                        rotateBy /= (1 + getViscosity(fluid, entity.getLevel()));
                     
                     entity.setXRot(entity.getXRot() + rotateBy);
                 }
@@ -178,10 +154,10 @@ public class ItemPhysicLite {
         
         FluidState state = item.level.getFluidState(pos);
         Fluid fluid = state.getType();
-        
-        if (fluid == null || fluid.getAttributes().getDensity() == 0)
+        if(fluid == null || fluid.getTickDelay(item.getLevel()) == 0) {
             return null;
-        
+        }
+
         if (below)
             return fluid;
         
@@ -206,15 +182,21 @@ public class ItemPhysicLite {
         return 1;
     }
     
-    private static Field stuckSpeedMultiplierField = null;
-    
     public static Vec3 getStuckSpeedMultiplier(Entity entity) {
-        if (stuckSpeedMultiplierField == null)
-            stuckSpeedMultiplierField = ObfuscationReflectionHelper.findField(Entity.class, "f_19865_");
-        try {
-            return (Vec3) stuckSpeedMultiplierField.get(entity);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            return null;
+        return ((EntityAccessor) entity).getStuckSpeedMultiplier();
+    }
+
+    public static float getViscosity(Fluid fluid, Level level) {
+        if(fluid == null) {
+            return 0;
         }
+        return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
+    }
+
+    @Override
+    public void onInitializeClient() {
+        CreativeCore.loader().registerClientTick(() -> {
+            lastTickTime = System.nanoTime();
+        });
     }
 }
