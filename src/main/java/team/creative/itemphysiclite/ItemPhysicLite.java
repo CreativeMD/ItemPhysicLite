@@ -1,11 +1,7 @@
 package team.creative.itemphysiclite;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluids;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,16 +20,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.common.Mod;
 import team.creative.creativecore.CreativeCore;
+import team.creative.creativecore.ICreativeLoader;
 import team.creative.creativecore.client.ClientLoader;
 import team.creative.itemphysiclite.mixin.EntityAccessor;
 
-@Mod(value = ItemPhysicLite.MODID)
+@Mod(ItemPhysicLite.MODID)
 public class ItemPhysicLite implements ClientLoader {
     
     public static final Logger LOGGER = LogManager.getLogger(ItemPhysicLite.MODID);
@@ -154,10 +152,10 @@ public class ItemPhysicLite implements ClientLoader {
         
         FluidState state = item.level.getFluidState(pos);
         Fluid fluid = state.getType();
-        if(fluid == null || fluid.getTickDelay(item.getLevel()) == 0) {
+        if (fluid == null || fluid.getTickDelay(item.getLevel()) == 0) {
             return null;
         }
-
+        
         if (below)
             return fluid;
         
@@ -185,18 +183,18 @@ public class ItemPhysicLite implements ClientLoader {
     public static Vec3 getStuckSpeedMultiplier(Entity entity) {
         return ((EntityAccessor) entity).getStuckSpeedMultiplier();
     }
-
+    
     public static float getViscosity(Fluid fluid, Level level) {
-        if(fluid == null) {
+        if (fluid == null) {
             return 0;
         }
         return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
     }
-
+    
     @Override
     public void onInitializeClient() {
-        CreativeCore.loader().registerClientTick(() -> {
-            lastTickTime = System.nanoTime();
-        });
+        ICreativeLoader loader = CreativeCore.loader();
+        loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
+        loader.registerClientTick(() -> lastTickTime = System.nanoTime());
     }
 }
