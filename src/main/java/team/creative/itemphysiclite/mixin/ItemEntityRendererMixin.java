@@ -1,7 +1,5 @@
 package team.creative.itemphysiclite.mixin;
 
-import java.util.Random;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,18 +14,20 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import team.creative.itemphysiclite.ItemPhysicLite;
 
 @Mixin(ItemEntityRenderer.class)
 public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity> {
+    
     @Shadow
     @Final
     private ItemRenderer itemRenderer;
     
     @Shadow
     @Final
-    private Random random;
+    private RandomSource random;
     
     protected ItemEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
