@@ -184,9 +184,8 @@ public class ItemPhysicLite implements ClientLoader {
     }
     
     public static float getViscosity(Fluid fluid, Level level) {
-        if (fluid == null) {
+        if (fluid == null)
             return 0;
-        }
         return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
     }
     
