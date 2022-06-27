@@ -51,7 +51,7 @@ public class ItemPhysicLite implements ClientLoader {
         BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level, (LivingEntity) null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
         int j = getModelCount(itemstack);
-        float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F;
+        float rotateBy = (System.nanoTime() - lastTickTime) / 1000000000F;
         if (mc.isPaused())
             rotateBy = 0;
         
