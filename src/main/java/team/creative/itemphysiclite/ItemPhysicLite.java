@@ -193,6 +193,6 @@ public class ItemPhysicLite implements ClientLoader {
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
         loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
-        loader.registerClientTick(() -> lastTickTime = System.nanoTime());
+        loader.registerClientRender(() -> lastTickTime = System.nanoTime());
     }
 }
