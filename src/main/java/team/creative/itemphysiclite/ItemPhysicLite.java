@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -59,8 +58,8 @@ public class ItemPhysicLite implements ClientLoader {
         if (motionMultiplier != null && motionMultiplier.lengthSqr() > 0)
             rotateBy *= motionMultiplier.x * 0.2;
         
-        pose.mulPose(Vector3f.XP.rotation((float) Math.PI / 2));
-        pose.mulPose(Vector3f.ZP.rotation(entity.getYRot()));
+        pose.mulPose(com.mojang.math.Axis.XP.rotation((float) Math.PI / 2));
+        pose.mulPose(com.mojang.math.Axis.ZP.rotation(entity.getYRot()));
         
         boolean applyEffects = entity.getAge() != 0 && (flag || mc.options != null);
         
@@ -102,7 +101,7 @@ public class ItemPhysicLite implements ClientLoader {
             double height = 0.2;
             if (flag)
                 pose.translate(0, height, 0);
-            pose.mulPose(Vector3f.YP.rotation(entity.getXRot()));
+            pose.mulPose(com.mojang.math.Axis.YP.rotation(entity.getXRot()));
             if (flag)
                 pose.translate(0, -height, 0);
         }
