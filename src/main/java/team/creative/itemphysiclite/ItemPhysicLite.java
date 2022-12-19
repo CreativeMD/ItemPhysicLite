@@ -27,17 +27,17 @@ import net.minecraftforge.fml.common.Mod;
 import team.creative.creativecore.CreativeCore;
 import team.creative.creativecore.ICreativeLoader;
 import team.creative.creativecore.client.ClientLoader;
+import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
+import team.creative.creativecore.common.config.sync.ConfigSynchronization;
 import team.creative.itemphysiclite.mixin.EntityAccessor;
 
 @Mod(ItemPhysicLite.MODID)
 public class ItemPhysicLite implements ClientLoader {
     
     public static final Logger LOGGER = LogManager.getLogger(ItemPhysicLite.MODID);
-    
     public static final String MODID = "itemphysiclite";
-    
     private static Minecraft mc = Minecraft.getInstance();
-    
+    public static ItemPhysicLiteConfig CONFIG;
     public static long lastTickTime;
     
     public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer, RandomSource rand) {
@@ -50,7 +50,7 @@ public class ItemPhysicLite implements ClientLoader {
         BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level, (LivingEntity) null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
         int j = getModelCount(itemstack);
-        float rotateBy = (System.nanoTime() - lastTickTime) / 1000000000F;
+        float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F * CONFIG.rotateSpeed;
         if (mc.isPaused())
             rotateBy = 0;
         
@@ -193,5 +193,7 @@ public class ItemPhysicLite implements ClientLoader {
         ICreativeLoader loader = CreativeCore.loader();
         loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
         loader.registerClientRender(() -> lastTickTime = System.nanoTime());
+        
+        CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new ItemPhysicLiteConfig(), ConfigSynchronization.CLIENT, false);
     }
 }
