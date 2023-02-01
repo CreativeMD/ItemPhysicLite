@@ -188,6 +188,11 @@ public class ItemPhysicLite implements ClientLoader {
         return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
     }
     
+    public ItemPhysicLite() {
+        ICreativeLoader loader = CreativeCore.loader();
+        loader.registerClient(this);
+    }
+    
     @Override
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
