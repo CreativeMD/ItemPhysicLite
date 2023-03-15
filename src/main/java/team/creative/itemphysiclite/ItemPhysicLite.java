@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -17,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -124,7 +124,7 @@ public class ItemPhysicLite implements ClientLoader {
                 }
             }
             
-            itemRenderer.render(itemstack, ItemTransforms.TransformType.GROUND, false, pose, buffer, packedLight, OverlayTexture.NO_OVERLAY, bakedmodel);
+            itemRenderer.render(itemstack, ItemDisplayContext.GROUND, false, pose, buffer, packedLight, OverlayTexture.NO_OVERLAY, bakedmodel);
             pose.popPose();
             if (!flag)
                 pose.translate(0.0, 0.0, 0.09375F); // pose.translate(0.0, 0.0, 0.05375F);
@@ -197,7 +197,7 @@ public class ItemPhysicLite implements ClientLoader {
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
         loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
-        loader.registerClientRender(() -> lastTickTime = System.nanoTime());
+        loader.registerClientRenderGui(() -> lastTickTime = System.nanoTime());
         
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new ItemPhysicLiteConfig(), ConfigSynchronization.CLIENT, false);
     }
