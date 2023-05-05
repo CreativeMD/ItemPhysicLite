@@ -23,7 +23,7 @@ minecraft {
 
             mods {
                 creativecore {
-                    source project(':CreativeLoaderForge').sourceSets.main
+                    source project(':CreativeCore').sourceSets.main
                 }
                 itemphysiclite {
                     source sourceSets.main
@@ -39,7 +39,7 @@ dependencies {
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     
-    implementation project(':CreativeLoaderForge')
+    implementation project(':CreativeCore')
 }
 
 mixin {
