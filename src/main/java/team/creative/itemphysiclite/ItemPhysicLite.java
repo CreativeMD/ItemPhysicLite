@@ -47,7 +47,7 @@ public class ItemPhysicLite implements ClientLoader {
         pose.pushPose();
         ItemStack itemstack = entity.getItem();
         rand.setSeed(itemstack.isEmpty() ? 187 : Item.getId(itemstack.getItem()) + itemstack.getDamageValue());
-        BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level, (LivingEntity) null, entity.getId());
+        BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level(), (LivingEntity) null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
         int j = getModelCount(itemstack);
         float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F * CONFIG.rotateSpeed;
@@ -66,25 +66,25 @@ public class ItemPhysicLite implements ClientLoader {
         //Handle Rotations
         if (applyEffects) {
             if (flag) {
-                if (!entity.isOnGround()) {
+                if (!entity.onGround()) {
                     rotateBy *= 2;
                     Fluid fluid = getFluid(entity);
                     if (fluid == null)
                         fluid = getFluid(entity, true);
                     if (fluid != null)
-                        rotateBy /= (1 + getViscosity(fluid, entity.getLevel()));
+                        rotateBy /= (1 + getViscosity(fluid, entity.level()));
                     
                     entity.setXRot(entity.getXRot() + rotateBy);
                 }
-            } else if (entity != null && !Double.isNaN(entity.getX()) && !Double.isNaN(entity.getY()) && !Double.isNaN(entity.getZ()) && entity.level != null) {
-                if (entity.isOnGround()) {
+            } else if (entity != null && !Double.isNaN(entity.getX()) && !Double.isNaN(entity.getY()) && !Double.isNaN(entity.getZ()) && entity.level() != null) {
+                if (entity.onGround()) {
                     if (!flag)
                         entity.setXRot(0);
                 } else {
                     rotateBy *= 2;
                     Fluid fluid = getFluid(entity);
                     if (fluid != null)
-                        rotateBy /= (1 + getViscosity(fluid, entity.getLevel()));
+                        rotateBy /= (1 + getViscosity(fluid, entity.level()));
                     
                     entity.setXRot(entity.getXRot() + rotateBy);
                 }
@@ -92,7 +92,7 @@ public class ItemPhysicLite implements ClientLoader {
             
             if (flag)
                 pose.translate(0, -0.2, -0.08);
-            else if (entity.level.getBlockState(entity.blockPosition()).getBlock() == Blocks.SNOW || entity.level.getBlockState(entity.blockPosition().below())
+            else if (entity.level().getBlockState(entity.blockPosition()).getBlock() == Blocks.SNOW || entity.level().getBlockState(entity.blockPosition().below())
                     .getBlock() == Blocks.SOUL_SAND)
                 pose.translate(0, 0.0, -0.14);
             else
@@ -140,7 +140,7 @@ public class ItemPhysicLite implements ClientLoader {
     }
     
     public static Fluid getFluid(ItemEntity item, boolean below) {
-        if (item.level == null)
+        if (item.level() == null)
             return null;
         
         double d0 = item.position().y;
@@ -148,16 +148,16 @@ public class ItemPhysicLite implements ClientLoader {
         if (below)
             pos = pos.below();
         
-        FluidState state = item.level.getFluidState(pos);
+        FluidState state = item.level().getFluidState(pos);
         Fluid fluid = state.getType();
-        if (fluid == null || fluid.getTickDelay(item.getLevel()) == 0) {
+        if (fluid == null || fluid.getTickDelay(item.level()) == 0) {
             return null;
         }
         
         if (below)
             return fluid;
         
-        double filled = state.getHeight(item.level, pos);
+        double filled = state.getHeight(item.level(), pos);
         
         if (d0 - pos.getY() - 0.2 <= filled)
             return fluid;
@@ -197,7 +197,7 @@ public class ItemPhysicLite implements ClientLoader {
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
         loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
-        loader.registerClientRenderGui(() -> lastTickTime = System.nanoTime());
+        loader.registerClientRenderGui(x -> lastTickTime = System.nanoTime());
         
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new ItemPhysicLiteConfig(), ConfigSynchronization.CLIENT, false);
     }
