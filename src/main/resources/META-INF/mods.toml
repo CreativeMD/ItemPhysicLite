@@ -6,7 +6,7 @@ license="LGPL-3.0-only"
 [[mods]]
     modId="itemphysiclite"
     logoFile="itemphysiclite.png"
-    version="1.5.0"
+    version="1.5.1"
     displayName="ItemPhysicLite"
     displayURL="https://modrinth.com/mod/itemphysic-lite"
     displayTest="IGNORE_SERVER_VERSION"
