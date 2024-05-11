@@ -194,7 +194,6 @@ public class ItemPhysicLite implements ClientLoader {
     @Override
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
-        loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
         loader.registerClientTick(() -> lastTickTime = System.nanoTime());
     }
 }

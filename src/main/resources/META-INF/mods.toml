@@ -1,16 +1,36 @@
 modLoader="javafml"
-loaderVersion="[24,)"
+loaderVersion="[40,)"
 issueTrackerURL="https://github.com/CreativeMD/ItemPhysicLite/issues"
-logoFile="itemphysic.png"
-license="GNU General Public License v3.0"
+license="LGPL-3.0-only"
 
 [[mods]]
-	modId="itemphysiclite"
-	version="${file.jarVersion}"
-	displayName="ItemPhysic Lite"
-	side="CLIENT"
-	displayURL="https://www.curseforge.com/minecraft/mc-mods/itemphysic-lite"
-	authors=["CreativeMD"]
-	clientSideOnly="true"
-	acceptableRemoteVersions="*"
-	description='''Enhances the rendering of items'''
+    modId="itemphysiclite"
+    logoFile="itemphysiclite.png"
+    version="1.5.0"
+    displayName="ItemPhysicLite"
+    displayURL="https://modrinth.com/mod/itemphysic-lite"
+    displayTest="IGNORE_SERVER_VERSION"
+    authors="CreativeMD"
+    description='''Enhances the rendering of items.'''
+
+[[dependencies.itemphysiclite]]
+    modId="forge"
+    mandatory=true
+    versionRange="[40.2.14,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.itemphysiclite]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18,1.19)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.itemphysiclite]]
+   modId="creativecore"
+   mandatory=true
+   ordering="NONE"
+   side="BOTH"
+   versionRange="2.10.22"
+
