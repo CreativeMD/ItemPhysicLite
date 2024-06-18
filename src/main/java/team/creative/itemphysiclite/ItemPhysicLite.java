@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -16,7 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -27,17 +28,17 @@ import net.minecraftforge.fml.common.Mod;
 import team.creative.creativecore.CreativeCore;
 import team.creative.creativecore.ICreativeLoader;
 import team.creative.creativecore.client.ClientLoader;
-import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
-import team.creative.creativecore.common.config.sync.ConfigSynchronization;
 import team.creative.itemphysiclite.mixin.EntityAccessor;
 
 @Mod(ItemPhysicLite.MODID)
 public class ItemPhysicLite implements ClientLoader {
     
     public static final Logger LOGGER = LogManager.getLogger(ItemPhysicLite.MODID);
+    
     public static final String MODID = "itemphysiclite";
+    
     private static Minecraft mc = Minecraft.getInstance();
-    public static ItemPhysicLiteConfig CONFIG;
+    
     public static long lastTickTime;
     
     public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer, RandomSource rand) {
@@ -50,16 +51,16 @@ public class ItemPhysicLite implements ClientLoader {
         BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level, (LivingEntity) null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
         int j = getModelCount(itemstack);
-        float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F * CONFIG.rotateSpeed;
+        float rotateBy = (System.nanoTime() - lastTickTime) / 1000000000F;
         if (mc.isPaused())
             rotateBy = 0;
         
         Vec3 motionMultiplier = getStuckSpeedMultiplier(entity);
         if (motionMultiplier != null && motionMultiplier.lengthSqr() > 0)
-            rotateBy *= motionMultiplier.x * 0.2;
+            rotateBy *= (float) (motionMultiplier.x * 0.2);
         
-        pose.mulPose(com.mojang.math.Axis.XP.rotation((float) Math.PI / 2));
-        pose.mulPose(com.mojang.math.Axis.ZP.rotation(entity.getYRot()));
+        pose.mulPose(Vector3f.XP.rotation((float) Math.PI / 2));
+        pose.mulPose(Vector3f.ZP.rotation(entity.getYRot()));
         
         boolean applyEffects = entity.getAge() != 0 && (flag || mc.options != null);
         
@@ -101,7 +102,7 @@ public class ItemPhysicLite implements ClientLoader {
             double height = 0.2;
             if (flag)
                 pose.translate(0, height, 0);
-            pose.mulPose(com.mojang.math.Axis.YP.rotation(entity.getXRot()));
+            pose.mulPose(Vector3f.YP.rotation(entity.getXRot()));
             if (flag)
                 pose.translate(0, -height, 0);
         }
@@ -124,7 +125,7 @@ public class ItemPhysicLite implements ClientLoader {
                 }
             }
             
-            itemRenderer.render(itemstack, ItemDisplayContext.GROUND, false, pose, buffer, packedLight, OverlayTexture.NO_OVERLAY, bakedmodel);
+            itemRenderer.render(itemstack, ItemTransforms.TransformType.GROUND, false, pose, buffer, packedLight, OverlayTexture.NO_OVERLAY, bakedmodel);
             pose.popPose();
             if (!flag)
                 pose.translate(0.0, 0.0, 0.09375F); // pose.translate(0.0, 0.0, 0.05375F);
@@ -188,17 +189,10 @@ public class ItemPhysicLite implements ClientLoader {
         return CreativeCore.loader().getFluidViscosityMultiplier(fluid, level);
     }
     
-    public ItemPhysicLite() {
-        ICreativeLoader loader = CreativeCore.loader();
-        loader.registerClient(this);
-    }
-    
     @Override
     public void onInitializeClient() {
         ICreativeLoader loader = CreativeCore.loader();
         loader.registerDisplayTest(() -> loader.ignoreServerNetworkConstant(), (a, b) -> true);
-        loader.registerClientRenderGui(() -> lastTickTime = System.nanoTime());
-        
-        CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new ItemPhysicLiteConfig(), ConfigSynchronization.CLIENT, false);
+        loader.registerClientRenderStart(() -> lastTickTime = System.nanoTime());
     }
 }
