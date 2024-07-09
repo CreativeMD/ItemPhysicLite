@@ -19,7 +19,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
@@ -93,8 +92,8 @@ public class ItemPhysicLite implements ClientLoader {
             
             if (flag)
                 pose.translate(0, -0.2, -0.08);
-            else if (entity.level().getBlockState(entity.blockPosition()).getBlock() == Blocks.SNOW || entity.level().getBlockState(entity.blockPosition().below())
-                    .getBlock() == Blocks.SOUL_SAND)
+            else if (ItemPhysicLite.CONFIG.blockRequireOffset.is(entity.level().getBlockState(entity.blockPosition())) || ItemPhysicLite.CONFIG.blockBelowRequireOffset.is(entity
+                    .level().getBlockState(entity.blockPosition().below())))
                 pose.translate(0, 0.0, -0.14 - entity.bobOffs * RANDOM_Y_OFFSET_SCALE);
             else
                 pose.translate(0, 0, -0.04 - entity.bobOffs * RANDOM_Y_OFFSET_SCALE);
