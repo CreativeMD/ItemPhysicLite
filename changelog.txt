@@ -1,3 +1,6 @@
+1.6.6
+Added mud to blocks require offset to prevent the item from being invisible
+
 1.6.5
 Added blockRequireOffset and blockBelowRequireOffset configuration
 Adapted CreativeCore 2.12.0 changes

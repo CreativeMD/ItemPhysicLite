@@ -6,7 +6,7 @@ license="LGPL-3.0-only"
 [[mods]]
     modId="itemphysiclite"
     logoFile="itemphysiclite.png"
-    version="1.6.5"
+    version="1.6.6"
     displayName="ItemPhysicLite"
     displayURL="https://modrinth.com/mod/itemphysic-lite"
     authors="CreativeMD"
