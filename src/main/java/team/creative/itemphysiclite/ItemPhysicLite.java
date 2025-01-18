@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import team.creative.creativecore.CreativeCore;
 import team.creative.creativecore.ICreativeLoader;
@@ -30,7 +31,7 @@ import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
 import team.creative.creativecore.common.config.sync.ConfigSynchronization;
 import team.creative.itemphysiclite.mixin.EntityAccessor;
 
-@Mod(ItemPhysicLite.MODID)
+@Mod(value = ItemPhysicLite.MODID, dist = Dist.CLIENT)
 public class ItemPhysicLite implements ClientLoader {
     
     public static final Logger LOGGER = LogManager.getLogger(ItemPhysicLite.MODID);
@@ -40,7 +41,8 @@ public class ItemPhysicLite implements ClientLoader {
     public static long lastTickTime;
     private static final double RANDOM_Y_OFFSET_SCALE = 0.05 / (Math.PI * 2);
     
-    public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer, RandomSource rand) {
+    public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer,
+            RandomSource rand) {
         if (entity.getAge() == 0)
             return false;
         
