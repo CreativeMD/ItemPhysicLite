@@ -7,6 +7,9 @@ import team.creative.creativecore.common.util.type.list.SortingBlockList;
 public class ItemPhysicLiteConfig {
     
     @CreativeConfig
+    public boolean oldRotation;
+    
+    @CreativeConfig
     @CreativeConfig.DecimalRange(min = 0, max = 10)
     public float rotateSpeed = 1.0F;
     

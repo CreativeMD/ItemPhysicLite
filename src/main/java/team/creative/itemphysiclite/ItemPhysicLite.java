@@ -7,17 +7,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -41,107 +36,85 @@ public class ItemPhysicLite implements ClientLoader {
     public static long lastTickTime;
     private static final double RANDOM_Y_OFFSET_SCALE = 0.05 / (Math.PI * 2);
     
-    public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer,
-            RandomSource rand) {
-        if (entity.getAge() == 0)
+    public static boolean render(ItemEntityRenderState state, PoseStack pose, MultiBufferSource buffer, int packedLight, RandomSource rand) {
+        if (state.ageInTicks < 1)
             return false;
         
         pose.pushPose();
-        ItemStack itemstack = entity.getItem();
-        rand.setSeed(itemstack.isEmpty() ? 187 : Item.getId(itemstack.getItem()) + itemstack.getDamageValue());
-        BakedModel bakedmodel = itemRenderer.getModel(itemstack, entity.level(), (LivingEntity) null, entity.getId());
-        boolean flag = bakedmodel.isGui3d();
-        int j = getModelCount(itemstack);
-        float rotateBy = (System.nanoTime() - lastTickTime) / 200000000F * CONFIG.rotateSpeed;
-        if (mc.isPaused())
-            rotateBy = 0;
         
-        Vec3 motionMultiplier = getStuckSpeedMultiplier(entity);
-        if (motionMultiplier != null && motionMultiplier.lengthSqr() > 0)
-            rotateBy *= motionMultiplier.x * 0.2;
+        rand.setSeed(state.seed);
+        int j = getModelCount(state.count);
+        boolean gui3d = state.item.isGui3d();
         
         pose.mulPose(com.mojang.math.Axis.XP.rotation((float) Math.PI / 2));
-        pose.mulPose(com.mojang.math.Axis.ZP.rotation(entity.getYRot()));
+        pose.mulPose(com.mojang.math.Axis.ZP.rotation(((ItemEntityRenderStateExtender) state).getYRot()));
         
-        boolean applyEffects = entity.getAge() != 0 && (flag || mc.options != null);
-        
-        //Handle Rotations
-        if (applyEffects) {
-            if (flag) {
-                if (!entity.onGround()) {
-                    rotateBy *= 2;
-                    Fluid fluid = getFluid(entity);
-                    if (fluid == null)
-                        fluid = getFluid(entity, true);
-                    if (fluid != null)
-                        rotateBy /= (1 + getViscosity(fluid, entity.level()));
-                    
-                    entity.setXRot(entity.getXRot() + rotateBy);
-                }
-            } else if (entity != null && !Double.isNaN(entity.getX()) && !Double.isNaN(entity.getY()) && !Double.isNaN(entity.getZ()) && entity.level() != null) {
-                if (entity.onGround()) {
-                    if (!flag)
-                        entity.setXRot(0);
-                } else {
-                    rotateBy *= 2;
-                    Fluid fluid = getFluid(entity);
-                    if (fluid != null)
-                        rotateBy /= (1 + getViscosity(fluid, entity.level()));
-                    
-                    entity.setXRot(entity.getXRot() + rotateBy);
-                }
-            }
-            
-            if (flag)
+        if (state.ageInTicks != 0 && (gui3d || mc.options != null)) {
+            if (gui3d)
                 pose.translate(0, -0.2, -0.08);
-            else if (ItemPhysicLite.CONFIG.blockRequireOffset.is(entity.level().getBlockState(entity.blockPosition())) || ItemPhysicLite.CONFIG.blockBelowRequireOffset.is(entity
-                    .level().getBlockState(entity.blockPosition().below())))
-                pose.translate(0, 0.0, -0.14 - entity.bobOffs * RANDOM_Y_OFFSET_SCALE);
+            else if (((ItemEntityRenderStateExtender) state).hasAdditionalOffset())
+                pose.translate(0, 0.0, -0.14 - state.bobOffset * RANDOM_Y_OFFSET_SCALE);
             else
-                pose.translate(0, 0, -0.04 - entity.bobOffs * RANDOM_Y_OFFSET_SCALE);
+                pose.translate(0, 0, -0.04 - state.bobOffset * RANDOM_Y_OFFSET_SCALE);
             
-            double height = 0.2;
-            if (flag)
+            double height = state.item.transform().scale.y();
+            if (gui3d)
                 pose.translate(0, height, 0);
-            pose.mulPose(com.mojang.math.Axis.YP.rotation(entity.getXRot()));
-            if (flag)
+            pose.mulPose(com.mojang.math.Axis.YP.rotation(((ItemEntityRenderStateExtender) state).getXRot()));
+            if (gui3d)
                 pose.translate(0, -height, 0);
         }
         
-        if (!flag) {
+        if (!gui3d) {
             float f7 = -0.0F * (j - 1) * 0.5F;
             float f8 = -0.0F * (j - 1) * 0.5F;
             float f9 = -0.09375F * (j - 1) * 0.5F;
             pose.translate(f7, f8, f9);
         }
         
+        float f = state.item.transform().scale.x();
+        float f1 = state.item.transform().scale.y();
+        float f2 = state.item.transform().scale.z();
+        
         for (int k = 0; k < j; ++k) {
             pose.pushPose();
             if (k > 0) {
-                if (flag) {
-                    float f11 = (rand.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                    float f13 = (rand.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                    float f10 = (rand.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                if (gui3d) {
+                    float f11 = (rand.nextFloat() * 2.0F - 1.0F) * f;
+                    float f13 = (rand.nextFloat() * 2.0F - 1.0F) * f1;
+                    float f10 = (rand.nextFloat() * 2.0F - 1.0F) * f2;
                     pose.translate(f11, f13, f10);
                 }
             }
             
-            itemRenderer.render(itemstack, ItemDisplayContext.GROUND, false, pose, buffer, packedLight, OverlayTexture.NO_OVERLAY, bakedmodel);
+            state.item.render(pose, buffer, packedLight, OverlayTexture.NO_OVERLAY);
             pose.popPose();
-            if (!flag)
-                pose.translate(0.0, 0.0, 0.09375F); // pose.translate(0.0, 0.0, 0.05375F);
-                
+            if (!gui3d)
+                pose.translate(0.0F * f, 0.0F * f1, 0.09375F * f2);
         }
         
         pose.popPose();
         return true;
     }
     
-    public static Fluid getFluid(ItemEntity item) {
-        return getFluid(item, false);
+    public static int getModelCount(int count) {
+        if (count > 48)
+            return 5;
+        if (count > 32)
+            return 4;
+        if (count > 16)
+            return 3;
+        if (count > 1)
+            return 2;
+        
+        return 1;
     }
     
-    public static Fluid getFluid(ItemEntity item, boolean below) {
+    public static Fluid calculateFluid(ItemEntity item) {
+        return calculateFluid(item, false);
+    }
+    
+    public static Fluid calculateFluid(ItemEntity item, boolean below) {
         if (item.level() == null)
             return null;
         
@@ -164,20 +137,6 @@ public class ItemPhysicLite implements ClientLoader {
         if (d0 - pos.getY() - 0.2 <= filled)
             return fluid;
         return null;
-    }
-    
-    public static int getModelCount(ItemStack stack) {
-        
-        if (stack.getCount() > 48)
-            return 5;
-        if (stack.getCount() > 32)
-            return 4;
-        if (stack.getCount() > 16)
-            return 3;
-        if (stack.getCount() > 1)
-            return 2;
-        
-        return 1;
     }
     
     public static Vec3 getStuckSpeedMultiplier(Entity entity) {
