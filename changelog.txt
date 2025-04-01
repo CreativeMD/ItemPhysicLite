@@ -1,3 +1,6 @@
+1.6.8
+Adapted to CreativeCore 2.13.0
+
 1.6.7
 Made mod client side only
 
