@@ -10,7 +10,9 @@
     "client": [
         "EntityAccessor",
         "ItemEntityRendererMixin",
-        "ItemEntityRenderStateMixin"
+        "ItemEntityRenderStateMixin",
+        "ItemStackRenderStateAccessor",
+        "LayerRenderStateAccessor"
     ],
     "minVersion": "0.8"
 }
