@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "itemphysiclite",
-    "version": "1.6.9",
+    "version": "1.6.10",
     "name": "ItemPhysicLite",
     "description": "Enhances the rendering of items.",
     "authors": [
@@ -23,6 +23,6 @@
         "fabricloader": ">=0.16.14",
         "fabric-api": "*",
         "minecraft": ">=1.21.6",
-        "creativecore": ">=2.13.0"
+        "creativecore": ">=2.14.0"
     }
 }

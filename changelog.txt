@@ -1,3 +1,6 @@
+1.6.10
+Adapted CreativeCore v2.14.0
+
 1.6.9
 Fixed crash when rendering a chest
 
