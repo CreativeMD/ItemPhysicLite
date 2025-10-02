@@ -6,8 +6,9 @@ import org.apache.logging.log4j.Logger;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -37,7 +38,7 @@ public class ItemPhysicLite implements ClientLoader {
     public static long lastTickTime;
     private static final double RANDOM_Y_OFFSET_SCALE = 0.05 / (Math.PI * 2);
     
-    public static boolean render(ItemEntityRenderState state, PoseStack pose, MultiBufferSource buffer, int packedLight, RandomSource rand) {
+    public static boolean submit(ItemEntityRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera, RandomSource rand) {
         if (state.ageInTicks < 1)
             return false;
         
@@ -90,7 +91,7 @@ public class ItemPhysicLite implements ClientLoader {
                 }
             }
             
-            state.item.render(pose, buffer, packedLight, OverlayTexture.NO_OVERLAY);
+            state.item.submit(pose, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
             pose.popPose();
             if (!gui3d)
                 pose.translate(0.0F * f, 0.0F * f1, 0.09375F * f2);

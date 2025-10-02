@@ -6,7 +6,7 @@ license="LGPL-3.0-only"
 [[mods]]
     modId="itemphysiclite"
     logoFile="itemphysiclite.png"
-    version="1.6.9"
+    version="1.6.10"
     displayName="ItemPhysicLite"
     displayURL="https://modrinth.com/mod/itemphysic-lite"
     authors="CreativeMD"
@@ -16,14 +16,14 @@ license="LGPL-3.0-only"
 [[dependencies.itemphysiclite]]
     modId="neoforge"
     type="required"
-    versionRange="[21.6,)"
+    versionRange="[21.9,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.itemphysiclite]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21.6,1.22)"
+    versionRange="[1.21.9,1.22)"
     ordering="NONE"
     side="BOTH"
 
@@ -32,7 +32,7 @@ license="LGPL-3.0-only"
    type="required"
    ordering="NONE"
    side="BOTH"
-   versionRange="[2.13.0,)"
+   versionRange="[2.14.0,)"
 
 [[mixins]]
    config="itemphysiclite.mixins.json"
