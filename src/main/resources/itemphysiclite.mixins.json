@@ -12,7 +12,8 @@
         "ItemEntityRendererMixin",
         "ItemEntityRenderStateMixin",
         "ItemStackRenderStateAccessor",
-        "LayerRenderStateAccessor"
+        "LayerRenderStateAccessor",
+        "RenderTypeAccessor"
     ],
     "minVersion": "0.8"
 }
