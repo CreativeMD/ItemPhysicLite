@@ -8,6 +8,11 @@
         "CreativeMD",
         "AriaFreeze"
     ],
+    "contact": {
+        "sources": "https://github.com/CreativeMD/ItemPhysicLite",
+        "homepage": "https://modrinth.com/mod/itemphysic-lite",
+        "issues": "https://github.com/CreativeMD/ItemPhysicLite/issues"
+    },
     "license": "LGPL-3.0-only",
     "icon": "itemphysiclite.png",
     "environment": "client",
