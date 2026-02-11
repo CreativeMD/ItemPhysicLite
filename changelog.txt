@@ -1,3 +1,6 @@
+1.6.11
+Added contact information to fabric.mod.json
+
 1.6.10
 Adapted CreativeCore v2.14.0
 
