@@ -1,3 +1,6 @@
+1.6.10
+Fixed items like trident not being visible on snow
+
 1.6.9
 Added contact information to fabric.mod.json
 
