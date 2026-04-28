@@ -1,3 +1,6 @@
+1.6.10
+Fixed items like trident not being visible on snow
+
 1.6.6
 Added mud to blocks require offset to prevent the item from being invisible
 
