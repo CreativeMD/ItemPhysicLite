@@ -92,7 +92,7 @@ public class ItemPhysicLite implements ClientLoader {
                 }
             }
             
-            if (flag)
+            if (bakedmodel.usesBlockLight())
                 pose.translate(0, -0.2, -0.08);
             else if (ItemPhysicLite.CONFIG.blockRequireOffset.is(entity.level().getBlockState(entity.blockPosition())) || ItemPhysicLite.CONFIG.blockBelowRequireOffset.is(entity
                     .level().getBlockState(entity.blockPosition().below())))
