@@ -40,8 +40,9 @@ public class ItemPhysicLite implements ClientLoader {
     public static long lastTickTime;
     private static final double RANDOM_Y_OFFSET_SCALE = 0.05 / (Math.PI * 2);
     
-    public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer, RandomSource rand) {
-        if (entity.getAge() == 0)
+    public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer,
+            RandomSource rand) {
+        if (entity.getAge() == 0 || ((ItemEntityExtender) entity).vanillaRendered())
             return false;
         
         pose.pushPose();
