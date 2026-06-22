@@ -9,6 +9,7 @@
     ],
     "client": [
         "EntityAccessor",
+        "ItemEntityMixin",
         "ItemEntityRendererMixin",
         "ItemEntityRenderStateMixin",
         "ItemStackRenderStateAccessor",

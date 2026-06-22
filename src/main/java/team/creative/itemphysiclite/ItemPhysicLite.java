@@ -39,7 +39,7 @@ public class ItemPhysicLite implements ClientLoader {
     private static final double RANDOM_Y_OFFSET_SCALE = 0.05 / (Math.PI * 2);
     
     public static boolean submit(ItemEntityRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera, RandomSource rand) {
-        if (state.ageInTicks < 1)
+        if (state.ageInTicks < 1 || ((ItemEntityRenderStateExtender) state).skipRendering())
             return false;
         
         pose.pushPose();

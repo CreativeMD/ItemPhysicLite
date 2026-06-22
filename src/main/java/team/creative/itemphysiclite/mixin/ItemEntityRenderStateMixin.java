@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Unique;
 import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
 import net.minecraft.world.entity.item.ItemEntity;
 import team.creative.itemphysiclite.ClientPhysic;
+import team.creative.itemphysiclite.ItemEntityExtender;
 import team.creative.itemphysiclite.ItemEntityRenderStateExtender;
 import team.creative.itemphysiclite.ItemPhysicLite;
 
@@ -44,6 +45,11 @@ public class ItemEntityRenderStateMixin implements ItemEntityRenderStateExtender
     }
     
     @Override
+    public boolean skipRendering() {
+        return skipRendering;
+    }
+    
+    @Override
     public void extractPhysic(ItemEntity entity) {
         ItemEntityRenderState state = (ItemEntityRenderState) (Object) this;
         isBlock = state.item.usesBlockLight();
@@ -52,6 +58,7 @@ public class ItemEntityRenderStateMixin implements ItemEntityRenderStateExtender
             entity.level().getBlockState(entity.blockPosition().below()));
         rotX = entity.getXRot();
         rotY = entity.getYRot();
+        skipRendering = ((ItemEntityExtender) entity).vanillaRendered();
     }
     
 }

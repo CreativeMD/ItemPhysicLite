@@ -10,6 +10,8 @@ public interface ItemEntityRenderStateExtender {
     
     public float getYRot();
     
+    public boolean skipRendering();
+    
     public boolean hasAdditionalOffset();
     
     public void extractPhysic(ItemEntity item);
