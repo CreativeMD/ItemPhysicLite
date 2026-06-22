@@ -43,7 +43,7 @@ public class ItemPhysicLite implements ClientLoader {
     
     public static boolean render(ItemEntity entity, float entityYaw, float partialTicks, PoseStack pose, MultiBufferSource buffer, int packedLight, ItemRenderer itemRenderer,
             RandomSource rand) {
-        if (entity.getAge() == 0)
+        if (entity.getAge() == 0 || ((ItemEntityExtender) entity).vanillaRendered())
             return false;
         
         pose.pushPose();
