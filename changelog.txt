@@ -1,3 +1,6 @@
+1.6.12
+Added vanillaRendered config option
+
 1.6.11
 Added contact information to fabric.mod.json
 
