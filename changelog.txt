@@ -1,3 +1,6 @@
+1.6.11
+Added vanillaRendered config option
+
 1.6.10
 Fixed items like trident not being visible on snow
 
