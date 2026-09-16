@@ -49,8 +49,8 @@ public class ItemPhysicLite implements ClientLoader {
         boolean gui3d = ((ItemEntityRenderStateExtender) state).isBlock();
         var transform = ((LayerRenderStateAccessor) ((ItemStackRenderStateAccessor) state.item).callFirstLayer()).getItemTransform();
         
-        pose.mulPose(com.mojang.math.Axis.XP.rotation((float) Math.PI / 2));
-        pose.mulPose(com.mojang.math.Axis.ZP.rotation(((ItemEntityRenderStateExtender) state).getYRot()));
+        pose.rotate(com.mojang.math.Axis.XP.rotation((float) Math.PI / 2));
+        pose.rotate(com.mojang.math.Axis.ZP.rotation(((ItemEntityRenderStateExtender) state).getYRot()));
         
         var mc = Minecraft.getInstance();
         if (state.ageInTicks != 0 && (gui3d || mc.options != null)) {
@@ -64,7 +64,7 @@ public class ItemPhysicLite implements ClientLoader {
             double height = transform.scale().y();
             if (gui3d)
                 pose.translate(0, height, 0);
-            pose.mulPose(com.mojang.math.Axis.YP.rotation(((ItemEntityRenderStateExtender) state).getXRot()));
+            pose.rotate(com.mojang.math.Axis.YP.rotation(((ItemEntityRenderStateExtender) state).getXRot()));
             if (gui3d)
                 pose.translate(0, -height, 0);
         }
