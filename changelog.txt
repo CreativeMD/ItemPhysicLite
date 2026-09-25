@@ -1,3 +1,6 @@
+1.6.13
+Fixed icon file (by sh-dima)
+
 1.6.11
 Added vanillaRendered config option
 
